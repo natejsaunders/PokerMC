@@ -3,6 +3,7 @@
 # v0.1 7/9/23
 
 import random
+import matplotlib
 
 # Class containing all information for the simulation itself
 class poker_simulation:
@@ -291,6 +292,8 @@ winners = {}
 for h in player_hands:
     winners[str(h)] = [0,0]
 
+# do ya want a graph?
+graph = matplotlib.pyplot()
 
 percent_complete = 0
 for i in range(simulations):
@@ -304,6 +307,9 @@ for i in range(simulations):
         for w in sim_winners:
             winners[str(w)][1] += 1
     else:    winners[str(sim_winners[0])][0] += 1
+
+    for w in winners:
+        graph.plot(w[0], i, str(w))
 
     # Loading bar
     if i % (simulations // 100) == 0:
