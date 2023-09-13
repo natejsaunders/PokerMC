@@ -3,7 +3,7 @@
 # v0.1 7/9/23
 
 import random
-import matplotlib
+import matplotlib.pyplot as plt
 
 # Class containing all information for the simulation itself
 class poker_simulation:
@@ -279,11 +279,11 @@ class poker_simulation:
         return tie, best_hands
 
 # Change these \/\/\/
-simulations = 100000
+simulations = 100
 player_hands = [['♠6', '♠7'],
                 ['♦A', '♣9'],
                 ['♣A', '♣K'],
-                ['♣T', '♦J'],
+                ['♣T', '♦T'],
                 ['♣2', '♠4'],
                 ]
 
@@ -292,8 +292,11 @@ winners = {}
 for h in player_hands:
     winners[str(h)] = [0,0]
 
-# do ya want a graph?
-graph = matplotlib.pyplot()
+# Winner data for making a graph
+winner_data = {}
+
+for h in player_hands:
+    winner_data[str(h)] = []
 
 percent_complete = 0
 for i in range(simulations):
@@ -308,9 +311,6 @@ for i in range(simulations):
             winners[str(w)][1] += 1
     else:    winners[str(sim_winners[0])][0] += 1
 
-    for w in winners:
-        graph.plot(w[0], i, str(w))
-
     # Loading bar
     if i % (simulations // 100) == 0:
         percent_complete += 1
@@ -318,10 +318,27 @@ for i in range(simulations):
         loading_bar = loading_bar_start + [" " for ii in range(30 - i // (simulations // 30))]
         print("[", "".join(loading_bar), "]  ", percent_complete, "%", end = "\r", sep="")
 
+
+    for w in winners:
+        winner_data[w].append(winners[w][0])
+
 print("\r\n")
 
 # Output results
 for hand, data in winners.items():
     print(hand, "wins", round(data[0] / simulations * 100, 1), "% of the time and ties", round(data[1] / simulations * 100, 1), "% of the time.")
+
+# do ya want a graph?
+graph = True
+
+if graph:
+    for ph in player_hands:
+        plt.plot(winner_data[str(ph)], label=str(ph))
+    plt.xlabel("Simulations")
+    plt.ylabel("Wins")
+    plt.legend(loc="upper left")
+    plt.show()
+
+
 
 print("\nFor", simulations, "simulations.")
