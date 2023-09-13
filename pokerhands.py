@@ -4,6 +4,7 @@
 
 import random
 
+# Class containing all information for the simulation itself
 class poker_simulation:
 
     def __init__(self, hands, community):
@@ -12,6 +13,7 @@ class poker_simulation:
         self.ranks = list("23456789TJQKA")#{"2":2,"3":3,"4":4,"5":5,"6":6,"7":7,"8":8,"9":9,"T":10,"J":11,"Q":12,"K":13,"A":14}
         self.deck = [suit + rank for rank in self.ranks for suit in self.suits]
 
+        # Used for 
         self.hand_rankings = ["High Card", "Pair", "Two Pair","Three of a Kind", "Straight", "Flush", "Full House", "Four of a Kind", "Straight Flush"]
 
         # Removing cards that have already been drawn
@@ -25,15 +27,18 @@ class poker_simulation:
         self.community = community
         self.hands = hands
 
+        # Store winning results to the class (not currently in use)
         self.winners = {}
         for h in self.hands:
             self.winners[str(h)] = 0
 
     # Returns an array that is used to compare hand rankings
+    # What each number in the array means is explained in the check for each ranking
     def find_hand_ranking(self, hand):
 
         hand.sort(key = self.rank, reverse = True)
 
+        # Count up the number of each rank and suit
         rank_counts = {rank : 0 for rank in self.ranks}
         suit_counts = {suit : 0 for suit in self.suits}
 
@@ -41,7 +46,7 @@ class poker_simulation:
             rank_counts[card[1]] += 1
             suit_counts[card[0]] += 1
 
-        
+        # Checking for flush
         flush_suit = ''
         is_flush = False
         for suit, count in suit_counts.items():
@@ -49,17 +54,16 @@ class poker_simulation:
                 is_flush = True
                 flush_suit = suit
 
-
-
+        # NEED TO FIX STRAIGH FLUSH THEY CURRENTLY HAPPEN TOO OFTEN
+        is_straight_flush = False
         is_straight = False
-
         straight_rank = 0
-        flush_rank = 0
 
         # Adding ace as 1 to help with straights
         rank_counts['1'] = rank_counts['A']
         ranks = list("123456789TJQKA")
 
+        # Check if there are any straights (if there are at least one of any 5 cards in a row based on rank)
         for start in range(len(ranks) - 4):
             if all(rank_counts[ranks[i]] >= 1 for i in range(start, start + 5)):
                 is_straight = True
@@ -71,7 +75,9 @@ class poker_simulation:
         if is_flush and is_straight:
             # Straigh Flush 
             # Returns 8 then the highest card in the straight
+            # DOESN'T WORK AS WE COUNT 7 CARDS FOR STRAIGHT AND FLUSH NOT 5 AAAAAAAAAAAAAAAAAAAAAAAa
 
+            # Fun to see how often Royal Flushes happen
             #if straight_rank == 14:
             #    print("Royal Flush!!")
 
@@ -214,16 +220,14 @@ class poker_simulation:
 
         return [0] + highest_cards
 
-
+    # Compares hand rankings and returns the higher, see above how hand rankings are calculated
     def compare_hands(self, hand_A, hand_B):
 
         hand_a = hand_A + self.community
         hand_b = hand_B + self.community
 
         hand_a_ranking = self.find_hand_ranking(hand_a)
-        #print(hand_a, hand_a_ranking)
         hand_b_ranking = self.find_hand_ranking(hand_b)
-        #print(hand_b, hand_b_ranking)
 
         for i in range(min(len(hand_a_ranking), len(hand_b_ranking))):
             if hand_a_ranking[i] > hand_b_ranking[i]:
@@ -237,9 +241,11 @@ class poker_simulation:
         error_msg = "No best hand selected." + str(hand_a_ranking) + str(hand_a) + str(hand_b_ranking) + str(hand_b)
         raise Exception(error_msg)
 
+    # Return the integer rank of the card input
     def rank(self, card):
         return self.ranks.index(card[-1]) + 2
 
+    # Run a single round of poker, draw all cards then output any winners and whether there is a tie
     def run(self):
 
         # Shuffle deck
@@ -261,7 +267,6 @@ class poker_simulation:
         for i in range(1, len(self.hands)):
             hand = self.hands[i]
 
-            #print(best_hands)
             compare = self.compare_hands(best_hands[0], hand)
             if compare == 'tie':
                 tie = True
@@ -269,16 +274,10 @@ class poker_simulation:
             else:
                 best_hands = [compare]
                 tie = False
-            #print(best_hand)
 
-        #print(self.hands)
-        #print(self.community)
-        #print("Player at index ", self.hands.index(best_hand), "wins!")
-        #blocker = input("")
-
-        #.winners[str(best_hand)] += 1
         return tie, best_hands
 
+# Change these \/\/\/
 simulations = 100000
 player_hands = [['♠6', '♠7'],
                 ['♦A', '♣9'],
@@ -287,10 +286,9 @@ player_hands = [['♠6', '♠7'],
                 ['♣2', '♠4'],
                 ]
 
-
+# The winners are stored in a dict: the key is the hand, index 0 is wins and 1 is ties
 winners = {}
 for h in player_hands:
-    # [win,tie]
     winners[str(h)] = [0,0]
 
 
@@ -300,8 +298,8 @@ for i in range(simulations):
     ps = poker_simulation(player_hands, [])
 
     tie, sim_winners = ps.run()
-    #(sim_winners)
     
+    # If there is a tie, an array of winners get +1 ties, otherwise the singular winner will get +1 wins (stored at index 1 and 0 respectivley)
     if tie: 
         for w in sim_winners:
             winners[str(w)][1] += 1
@@ -314,14 +312,10 @@ for i in range(simulations):
         loading_bar = loading_bar_start + [" " for ii in range(30 - i // (simulations // 30))]
         print("[", "".join(loading_bar), "]  ", percent_complete, "%", end = "\r", sep="")
 
-#print("Player 1 won", round(win_count / simulations * 100, 1), "% of the time") 
-#print("With hand:", player_hand)
-
 print("\r\n")
 
+# Output results
 for hand, data in winners.items():
     print(hand, "wins", round(data[0] / simulations * 100, 1), "% of the time and ties", round(data[1] / simulations * 100, 1), "% of the time.")
 
 print("\nFor", simulations, "simulations.")
-
-# Test for GitHub
