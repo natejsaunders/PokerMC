@@ -10,10 +10,7 @@ class poker_simulation:
         # Generating a deck
         self.suits = ["♣","♦","♠","♥"]
         self.ranks = list("23456789TJQKA")#{"2":2,"3":3,"4":4,"5":5,"6":6,"7":7,"8":8,"9":9,"T":10,"J":11,"Q":12,"K":13,"A":14}
-        self.deck = []#[suit + rank for (rank,suit) in (self.ranks, self.suits)]
-        for suit in self.suits:
-            for r in self.ranks:
-                self.deck.append(suit + r)
+        self.deck = [suit + rank for rank in self.ranks for suit in self.suits]
 
         self.hand_rankings = ["High Card", "Pair", "Two Pair","Three of a Kind", "Straight", "Flush", "Full House", "Four of a Kind", "Straight Flush"]
 
@@ -326,17 +323,5 @@ for hand, data in winners.items():
     print(hand, "wins", round(data[0] / simulations * 100, 1), "% of the time and ties", round(data[1] / simulations * 100, 1), "% of the time.")
 
 print("\nFor", simulations, "simulations.")
-
-
-"""
-just an interesting result
-['♠6', '♠7'] wins 26.1 % of the time.
-['♦A', '♣9'] wins 10.4 % of the time.
-['♣A', '♣K'] wins 25.2 % of the time.
-['♣T', '♦J'] wins 25.1 % of the time.
-['♣2', '♠4'] wins 13.2 % of the time.
-
-from 1 million simulation
-"""
 
 # Test for GitHub
