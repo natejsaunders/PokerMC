@@ -282,7 +282,7 @@ simulations = 100000
 player_hands = [['♠6', '♠7'],
                 ['♦A', '♣9'],
                 ['♣A', '♣K'],
-                ['♣T', '♦J'],
+                ['♦T', '♦J'],
                 ['♣2', '♠4'],
                 ]
 
@@ -295,7 +295,7 @@ for h in player_hands:
 percent_complete = 0
 for i in range(simulations):
 
-    ps = poker_simulation(player_hands, [])
+    ps = poker_simulation(player_hands, ['♣Q','♣J','♣T'])
 
     tie, sim_winners = ps.run()
     
